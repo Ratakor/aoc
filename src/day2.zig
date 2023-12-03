@@ -1,5 +1,4 @@
 const std = @import("std");
-const assert = std.debug.assert;
 const print = std.debug.print;
 
 const Color = struct {
@@ -7,7 +6,7 @@ const Color = struct {
     max: usize,
 };
 
-const data = @embedFile("data/input2.txt");
+const data = @embedFile("./data/input2.txt");
 const example =
     \\Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
     \\Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
@@ -99,4 +98,9 @@ fn countDigits(number: usize) usize {
         n /= 10;
     }
     return count;
+}
+
+test {
+    try std.testing.expectEqual(@as(usize, 2528), try solution1());
+    try std.testing.expectEqual(@as(usize, 67363), try solution2());
 }

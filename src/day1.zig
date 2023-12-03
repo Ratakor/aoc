@@ -1,7 +1,6 @@
 const std = @import("std");
-
-const data = @embedFile("data/input1.txt");
-const numbers = "0123456789";
+const data = @embedFile("./data/input1.txt");
+const numbers = "123456789";
 const numbers_str = [_][]const u8{
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 };
@@ -61,4 +60,9 @@ pub fn solution2() !usize {
     }
 
     return sum;
+}
+
+test {
+    try std.testing.expectEqual(@as(usize, 55607), try solution1());
+    try std.testing.expectEqual(@as(usize, 55291), try solution2());
 }
