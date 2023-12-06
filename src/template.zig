@@ -1,6 +1,7 @@
 const std = @import("std");
 const mem = std.mem;
 const print = std.debug.print;
+const parseUnsigned = std.fmt.parseUnsigned;
 const data = @embedFile("./data/input$.txt");
 
 pub fn solution1() !usize {
