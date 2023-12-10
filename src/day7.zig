@@ -28,7 +28,7 @@ pub fn solution2() !usize {
     return solve(data, true);
 }
 
-fn solve(comptime input: []const u8, comptime has_joker: bool) !usize {
+fn solve(input: []const u8, comptime has_joker: bool) !usize {
     var gpa: std.heap.GeneralPurposeAllocator(.{}) = .{};
     var hands = std.ArrayList(Hand).init(gpa.allocator());
     defer hands.deinit();
