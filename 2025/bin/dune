@@ -1,4 +1,6 @@
 (executable
  (public_name aoc)
  (name main)
- (libraries aoc))
+ (libraries aoc)
+ (link_flags
+   (:standard -linkall)))
