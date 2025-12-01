@@ -15,13 +15,25 @@
     {
       # nix run . -- <day> [<filename>]
       packages = forAllSystems (
-        system: pkgs: {
+        system: pkgs:
+        let
+          lib = pkgs.lib;
+          fs = lib.fileset;
+        in
+        {
           default = self.packages.${system}.aoc;
           aoc = pkgs.ocamlPackages.buildDunePackage {
             pname = "aoc";
             version = "0.1.0";
             duneVersion = "3";
-            src = ./.;
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.unions [
+                ./dune-project
+                ./lib
+                ./bin
+              ];
+            };
             buildInputs = builtins.attrValues {
               inherit (pkgs)
                 dune_3
