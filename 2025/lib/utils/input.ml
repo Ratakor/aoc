@@ -5,9 +5,9 @@ let read_file_to_string filename =
   close_in ic;
   s
 
-let split_on_newline str =
+let tokenize_on_char c str =
   str
-  |> String.split_on_char '\n'
+  |> String.split_on_char c
   |> List.map String.trim
   |> List.filter (fun x -> String.length x > 0)
 

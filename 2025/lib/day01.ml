@@ -49,7 +49,7 @@ module Day01 : Day.Day = struct
   let part1 filename =
     filename
     |> Utils.Input.read_file_to_string
-    |> Utils.Input.split_on_newline
+    |> Utils.Input.tokenize_on_char '\n'
     |> List.map line_to_instr
     |> rot 50
     |> Printf.printf "Part 1: %d\n" (* Should we return the result instead? *)
@@ -57,7 +57,7 @@ module Day01 : Day.Day = struct
   let part2 filename =
     filename
     |> Utils.Input.read_file_to_string
-    |> Utils.Input.split_on_newline
+    |> Utils.Input.tokenize_on_char '\n'
     |> List.map line_to_instr
     |> rot2 50
     |> Printf.printf "Part 2: %d\n"
