@@ -11,6 +11,7 @@ module Day01 : Day.Day = struct
     match instr with
     | 'L', n -> pos - n |> wrap
     | 'R', n -> pos + n |> wrap
+    | _ -> failwith "Unexpected char"
 
   let rot start instructions =
     let rec aux acc pos instr =
@@ -33,6 +34,7 @@ module Day01 : Day.Day = struct
     | 'R', n ->
         let p = pos + n in
         (wrap p, p / 100)
+    | _ -> failwith "Unexpected char"
 
   let rot2 start instructions =
     let rec aux acc pos instr =
