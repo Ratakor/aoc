@@ -3,4 +3,4 @@
  (name main)
  (libraries aoc)
  (link_flags
-   (:standard -linkall)))
+  (:standard -linkall)))

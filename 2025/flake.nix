@@ -84,10 +84,11 @@
               # opam
               ocaml
               ;
-            # inherit (pkgs.ocamlPackages)
-            #   cohttp-lwt-unix
-            #   lwt_ssl
-            #   ;
+            inherit (pkgs.ocamlPackages)
+              ocamlformat
+              # cohttp-lwt-unix
+              # lwt_ssl
+              ;
             # inherit (pkgs.ocamlPackages.janeStreet)
             #   ppx_expect
             #   ;
