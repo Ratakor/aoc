@@ -36,6 +36,7 @@
     in
     {
       # nix run . -- <day> [<filename>]
+      # dune exec aoc <day> [<filename>]
       packages = eachSystem (
         pkgs:
         let
