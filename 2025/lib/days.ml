@@ -1,5 +1,5 @@
 (* This module is used to register and find days. *)
-let registry : (string, (module Day.Day)) Hashtbl.t = Hashtbl.create 12
+let registry : (string, (module Day.Solution)) Hashtbl.t = Hashtbl.create 12
 
 (* Modules register themselves with this function. *)
 let register day day_module = Hashtbl.replace registry day day_module

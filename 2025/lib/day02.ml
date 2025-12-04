@@ -1,4 +1,4 @@
-module Day02 : Day.Day = struct
+module Day02 : Day.Solution = struct
   let is_invalid regex n = Str.string_match regex (string_of_int n) 0
 
   let sum_match_range match_fn start stop =

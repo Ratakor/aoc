@@ -1,4 +1,4 @@
-module Day03 : Day.Day = struct
+module Day03 : Day.Solution = struct
   let digits_of_string s =
     s
     |> String.to_seq

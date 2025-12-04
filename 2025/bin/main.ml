@@ -1,5 +1,5 @@
 let run_day day_module filename =
-  let module D = (val day_module : Day.Day) in
+  let module D = (val day_module : Day.Solution) in
   Utils.Timing.time_function D.part1 filename;
   Utils.Timing.time_function D.part2 filename
 

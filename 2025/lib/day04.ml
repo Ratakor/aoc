@@ -1,4 +1,4 @@
-module Day04 : Day.Day = struct
+module Day04 : Day.Solution = struct
   let directions =
     [ (-1, -1); (0, -1); (1, -1); (-1, 0); (1, 0); (-1, 1); (0, 1); (1, 1) ]
 

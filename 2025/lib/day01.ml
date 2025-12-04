@@ -1,4 +1,4 @@
-module Day01 : Day.Day = struct
+module Day01 : Day.Solution = struct
   let line_to_instr line =
     ( String.get line 0,
       String.sub line 1 (String.length line - 1) |> int_of_string )
@@ -62,7 +62,5 @@ module Day01 : Day.Day = struct
     |> rot2 50
     |> Printf.printf "Part 2: %d\n"
 end
-
-include Day01
 
 let () = Days.register "1" (module Day01)
