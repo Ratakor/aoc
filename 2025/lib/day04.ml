@@ -56,7 +56,6 @@ module Day04 : Day.Solution = struct
     |> to_grid
     |> get_accessible_idxs
     |> List.length
-    |> Printf.printf "Part 1: %d\n"
 
   let part2 filename =
     filename
@@ -64,7 +63,6 @@ module Day04 : Day.Solution = struct
     |> Utils.Input.tokenize_on_char '\n'
     |> to_grid
     |> solve_part2
-    |> Printf.printf "Part 2: %d\n"
 end
 
 let () = Days.register "4" (module Day04)

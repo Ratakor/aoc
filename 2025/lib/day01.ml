@@ -23,21 +23,15 @@ module Day01 : Day.Solution = struct
     in
     aux 0 start instructions
 
-  let part1 filename =
+  let solve filename f =
     filename
     |> Utils.Input.read_file_to_string
     |> Utils.Input.tokenize_on_char '\n'
     |> List.map line_to_instr
-    |> unlock_safe 50 (fun acc is_zero _ -> acc + Bool.to_int is_zero)
-    |> Printf.printf "Part 1: %d\n"
+    |> unlock_safe 50 f
 
-  let part2 filename =
-    filename
-    |> Utils.Input.read_file_to_string
-    |> Utils.Input.tokenize_on_char '\n'
-    |> List.map line_to_instr
-    |> unlock_safe 50 (fun acc _ loops -> acc + loops)
-    |> Printf.printf "Part 2: %d\n"
+  let part1 filename = solve filename (fun acc zero _ -> acc + Bool.to_int zero)
+  let part2 filename = solve filename (fun acc _ loops -> acc + loops)
 end
 
 let () = Days.register "1" (module Day01)

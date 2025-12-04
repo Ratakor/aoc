@@ -37,8 +37,8 @@ module Day03 : Day.Solution = struct
     |> List.map digits_of_string
     |> List.fold_left (fun acc digits -> acc + find_jolt digits n) 0
 
-  let part1 filename = solve filename 2 |> Printf.printf "Part 1: %d\n"
-  let part2 filename = solve filename 12 |> Printf.printf "Part 2: %d\n"
+  let part1 filename = solve filename 2
+  let part2 filename = solve filename 12
 end
 
 let () = Days.register "3" (module Day03)

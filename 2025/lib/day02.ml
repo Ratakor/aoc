@@ -12,7 +12,7 @@ module Day02 : Day.Solution = struct
   let range_of_string s =
     s |> String.split_on_char '-' |> List.map int_of_string
 
-  let solve match_fn filename =
+  let solve filename match_fn =
     filename
     |> Utils.Input.read_file_to_string
     |> Utils.Input.tokenize_on_char ','
@@ -22,14 +22,10 @@ module Day02 : Day.Solution = struct
     |> List.fold_left ( + ) 0
 
   let part1 filename =
-    filename
-    |> solve (is_invalid @@ Str.regexp {|^\([0-9]+\)\1$|})
-    |> Printf.printf "Part 1: %d\n"
+    solve filename (is_invalid @@ Str.regexp {|^\([0-9]+\)\1$|})
 
   let part2 filename =
-    filename
-    |> solve (is_invalid @@ Str.regexp {|^\([0-9]+\)\1+$|})
-    |> Printf.printf "Part 2: %d\n"
+    solve filename (is_invalid @@ Str.regexp {|^\([0-9]+\)\1+$|})
 end
 
 let () = Days.register "2" (module Day02)
