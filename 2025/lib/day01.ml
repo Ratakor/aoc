@@ -7,42 +7,19 @@ module Day01 : Day.Solution = struct
     let result = n mod 100 in
     if result < 0 then result + 100 else result
 
-  let apply_instr pos instr =
+  let rot pos instr =
     match instr with
-    | 'L', n -> pos - n |> wrap
-    | 'R', n -> pos + n |> wrap
+    | 'L', d -> (wrap (pos - d), ((100 - pos + d) / 100) - Bool.to_int (pos = 0))
+    | 'R', d -> (wrap (pos + d), (pos + d) / 100)
     | _ -> failwith "Unexpected char"
 
-  let rot start instructions =
+  let unlock_safe start f instructions =
     let rec aux acc pos instr =
       match instr with
       | [] -> acc
       | i :: tail ->
-          let new_pos = apply_instr pos i in
-          if new_pos = 0 then aux (acc + 1) new_pos tail
-          else aux acc new_pos tail
-    in
-    aux 0 start instructions
-
-  (* I believe we can make a wrap2 function but this looks easier *)
-  let backward_clicks pos n =
-    if pos = 0 then n / 100 else if n < pos then 0 else ((n - pos) / 100) + 1
-
-  let apply_instr2 pos instr =
-    match instr with
-    | 'L', n -> (pos - n |> wrap, backward_clicks pos n)
-    | 'R', n ->
-        let p = pos + n in
-        (wrap p, p / 100)
-    | _ -> failwith "Unexpected char"
-
-  let rot2 start instructions =
-    let rec aux acc pos instr =
-      match instr with
-      | [] -> acc
-      | i :: tail ->
-          let new_pos, n = apply_instr2 pos i in
-          aux (acc + n) new_pos tail
+          let new_pos, loops = rot pos i in
+          aux (f acc (new_pos = 0) loops) new_pos tail
     in
     aux 0 start instructions
 
@@ -51,15 +28,15 @@ module Day01 : Day.Solution = struct
     |> Utils.Input.read_file_to_string
     |> Utils.Input.tokenize_on_char '\n'
     |> List.map line_to_instr
-    |> rot 50
-    |> Printf.printf "Part 1: %d\n" (* Should we return the result instead? *)
+    |> unlock_safe 50 (fun acc is_zero _ -> acc + Bool.to_int is_zero)
+    |> Printf.printf "Part 1: %d\n"
 
   let part2 filename =
     filename
     |> Utils.Input.read_file_to_string
     |> Utils.Input.tokenize_on_char '\n'
     |> List.map line_to_instr
-    |> rot2 50
+    |> unlock_safe 50 (fun acc _ loops -> acc + loops)
     |> Printf.printf "Part 2: %d\n"
 end
 
