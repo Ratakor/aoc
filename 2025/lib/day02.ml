@@ -1,4 +1,4 @@
-module Day02 : Day.Solution = struct
+module Impl = struct
   let is_invalid regex n = Str.string_match regex (string_of_int n) 0
 
   let sum_match_range match_fn start stop =
@@ -23,5 +23,8 @@ module Day02 : Day.Solution = struct
   let part1 input = solve input (is_invalid @@ Str.regexp {|^\([0-9]+\)\1$|})
   let part2 input = solve input (is_invalid @@ Str.regexp {|^\([0-9]+\)\1+$|})
 end
+
+module Day02 : Day.Solution = Impl
+include Impl
 
 let () = Days.register "2" (module Day02)

@@ -1,4 +1,4 @@
-module Day03 : Day.Solution = struct
+module Impl = struct
   let digits_of_string s =
     s
     |> String.to_seq
@@ -39,5 +39,8 @@ module Day03 : Day.Solution = struct
   let part1 input = solve input 2
   let part2 input = solve input 12
 end
+
+module Day03 : Day.Solution = Impl
+include Impl
 
 let () = Days.register "3" (module Day03)

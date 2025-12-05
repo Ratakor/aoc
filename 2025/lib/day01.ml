@@ -1,4 +1,4 @@
-module Day01 : Day.Solution = struct
+module Impl = struct
   let dial_start = 50
   let dial_size = 100
 
@@ -31,5 +31,8 @@ module Day01 : Day.Solution = struct
         let sum = dial + delta in
         abs (sum / dial_size) + Bool.to_int (sum <= 0 && dial <> 0))
 end
+
+module Day01 : Day.Solution = Impl
+include Impl
 
 let () = Days.register "1" (module Day01)

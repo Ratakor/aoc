@@ -1,4 +1,4 @@
-module Day05 : Day.Solution = struct
+module Impl = struct
   type inventory =
     | Range of (int * int)
     | Ingredient of int
@@ -53,5 +53,8 @@ module Day05 : Day.Solution = struct
     fst @@ parse input
     |> List.fold_left (fun acc (start, stop) -> acc + (stop - start + 1)) 0
 end
+
+module Day05 : Day.Solution = Impl
+include Impl
 
 let () = Days.register "5" (module Day05)

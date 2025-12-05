@@ -1,4 +1,4 @@
-module Day04 : Day.Solution = struct
+module Impl = struct
   let directions =
     [ (-1, -1); (0, -1); (1, -1); (-1, 0); (1, 0); (-1, 1); (0, 1); (1, 1) ]
 
@@ -53,5 +53,8 @@ module Day04 : Day.Solution = struct
   let part1 input = input |> to_grid |> get_accessible_idxs |> List.length
   let part2 input = input |> to_grid |> remove_rolls |> count_removed_rolls
 end
+
+module Day04 : Day.Solution = Impl
+include Impl
 
 let () = Days.register "4" (module Day04)
