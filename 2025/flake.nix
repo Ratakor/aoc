@@ -2,8 +2,20 @@
   description = "AoC 2025 with OCaml";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # nixpkgs.follows = "opam-nix/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/x86_64-linux";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+    opam-nix = {
+      url = "github:tweag/opam-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,92 +26,86 @@
     {
       self,
       nixpkgs,
-      systems,
+      flake-utils,
+      opam-nix,
       treefmt-nix,
       ...
     }:
     let
-      lib = nixpkgs.lib;
+      package = "aoc";
+    in
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        lib = pkgs.lib;
+        fs = lib.fileset;
+        src = fs.toSource {
+          root = ./.;
+          fileset = fs.unions [
+            ./bin
+            ./lib
+            # ./test
+            ./aoc.opam
+            ./dune-project
+          ];
+        };
+        devPackagesQuery = {
+          # You can add "development" packages here.
+          # They will get added to the devShell automatically.
+          ocaml-lsp-server = "*";
+          ocamlformat = "*";
+        };
+        query = devPackagesQuery // {
+          ## You can force versions of certain packages here, e.g:
+          ## - force the ocaml compiler to be taken from opam-repository:
+          ocaml-base-compiler = "*";
+          ## - or force the compiler to be taken from nixpkgs and be a certain version:
+          # ocaml-system = "4.14.0";
+          ## - or force ocamlfind to be a certain version:
+          # ocamlfind = "1.9.2";
+        };
+        scope = opam-nix.lib.${system}.buildOpamProject' { } src query;
+        overlay = final: prev: {
+          # You can add overrides here
+          ${package} = prev.${package}.overrideAttrs (_: {
+            # Prevent the ocaml dependencies from leaking into dependent environments
+            doNixSupport = false;
+          });
+        };
+        scope' = scope.overrideScope overlay;
+        # The main package containing the executable
+        main = scope'.${package};
+        # Packages from devPackagesQuery
+        devPackages = builtins.attrValues (lib.getAttrs (builtins.attrNames devPackagesQuery) scope');
 
-      eachSystem = f: lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
-
-      treefmt = eachSystem (
-        pkgs:
-        treefmt-nix.lib.evalModule pkgs {
+        treefmt = treefmt-nix.lib.evalModule pkgs {
           projectRootFile = "flake.nix";
           programs = {
             nixfmt.enable = true;
             ocamlformat.enable = true;
           };
-        }
-      );
-    in
-    {
-      # nix run . -- <day> [<filename>]
-      # dune exec aoc <day> [<filename>]
-      packages = eachSystem (
-        pkgs:
-        let
-          lib = pkgs.lib;
-          fs = lib.fileset;
-        in
-        {
-          default = self.packages.${pkgs.system}.aoc;
-          aoc = pkgs.ocamlPackages.buildDunePackage {
-            pname = "aoc";
-            version = "0.1.0";
-            duneVersion = "3";
-            src = fs.toSource {
-              root = ./.;
-              fileset = fs.unions [
-                ./dune-project
-                ./lib
-                ./bin
-              ];
-            };
-            buildInputs = builtins.attrValues {
-              inherit (pkgs)
-                dune_3
-                # opam
-                ocaml
-                ;
-              # inherit (pkgs.ocamlPackages)
-              #   cohttp-lwt-unix
-              #   lwt_ssl
-              #   ;
-              # inherit (pkgs.ocamlPackages.janeStreet)
-              #   ppx_expect
-              #   ;
-            };
-          };
-          strictDeps = true;
-        }
-      );
-
-      devShells = eachSystem (pkgs: {
-        default = pkgs.mkShellNoCC {
-          packages = builtins.attrValues {
-            inherit (pkgs)
-              dune_3
-              # opam
-              ocaml
-              ;
-            inherit (pkgs.ocamlPackages)
-              ocamlformat
-              # cohttp-lwt-unix
-              # lwt_ssl
-              ;
-            # inherit (pkgs.ocamlPackages.janeStreet)
-            #   ppx_expect
-            #   ;
-          };
         };
-      });
+      in
+      {
+        # This was in the opam-nix template but it messes with `nix flake show`
+        # legacyPackages = scope';
 
-      formatter = eachSystem (pkgs: treefmt.${pkgs.system}.config.build.wrapper);
+        packages.default = main;
 
-      checks = eachSystem (pkgs: {
-        formatting = treefmt.${pkgs.system}.config.build.check self;
-      });
-    };
+        devShells.default = pkgs.mkShellNoCC {
+          inputsFrom = [ main ];
+          buildInputs = devPackages ++ [
+            # You can add packages from nixpkgs here
+          ];
+        };
+
+        formatter = treefmt.config.build.wrapper;
+
+        checks = {
+          formatting = treefmt.config.build.check self;
+          # TODO: dune test
+        };
+      }
+    );
 }

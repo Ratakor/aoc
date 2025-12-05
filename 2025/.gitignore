@@ -1,3 +1,4 @@
 inputs/
 .direnv/
 _build/
+_opam/
