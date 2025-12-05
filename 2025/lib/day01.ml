@@ -1,36 +1,35 @@
 module Day01 : Day.Solution = struct
-  let line_to_instr line =
-    ( String.get line 0,
-      String.sub line 1 (String.length line - 1) |> int_of_string )
+  let dial_start = 50
+  let dial_size = 100
 
-  let wrap n =
-    let result = n mod 100 in
-    if result < 0 then result + 100 else result
-
-  let rot pos instr =
-    match instr with
-    | 'L', d -> (wrap (pos - d), ((100 - pos + d) / 100) - Bool.to_int (pos = 0))
-    | 'R', d -> (wrap (pos + d), (pos + d) / 100)
+  let line_to_delta line =
+    let n = String.sub line 1 (String.length line - 1) |> int_of_string in
+    match String.get line 0 with
+    | 'L' -> -n
+    | 'R' -> n
     | _ -> failwith "Unexpected char"
 
-  let unlock_safe start f instructions =
-    let rec aux acc pos instr =
-      match instr with
-      | [] -> acc
-      | i :: tail ->
-          let new_pos, loops = rot pos i in
-          aux (f acc (new_pos = 0) loops) new_pos tail
-    in
-    aux 0 start instructions
+  let ( % ) a b =
+    let r = a mod b in
+    if r < 0 then r + b else r
 
-  let solve input f =
+  let solve input ctz =
     input
     |> Utils.Input.tokenize_on_char '\n'
-    |> List.map line_to_instr
-    |> unlock_safe 50 f
+    |> List.map line_to_delta
+    |> List.fold_left
+         (fun (acc, dial) delta ->
+           let dial' = (dial + delta) % dial_size in
+           (acc + ctz dial' dial delta, dial'))
+         (0, dial_start)
+    |> fst
 
-  let part1 input = solve input (fun acc is_zero _ -> acc + Bool.to_int is_zero)
-  let part2 input = solve input (fun acc _ loops -> acc + loops)
+  let part1 input = solve input (fun dial' _ _ -> Bool.to_int (dial' = 0))
+
+  let part2 input =
+    solve input (fun _ dial delta ->
+        let sum = dial + delta in
+        abs (sum / dial_size) + Bool.to_int (sum <= 0 && dial <> 0))
 end
 
 let () = Days.register "1" (module Day01)
