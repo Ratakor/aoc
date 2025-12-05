@@ -12,12 +12,13 @@ module Day04 : Day.Solution = struct
     List.filter_map
       (fun (dx, dy) ->
         let nx = x + dx and ny = y + dy in
+        (* these checks could be removed by padding the grid *)
         if nx >= 0 && nx < w && ny >= 0 && ny < h then Some (nx, ny) else None)
       directions
 
   let is_accessible grid x y =
     List.fold_left
-      (fun acc (nx, ny) -> acc + if grid.(ny).(nx) = '@' then 1 else 0)
+      (fun acc (nx, ny) -> acc + Bool.to_int (grid.(ny).(nx) = '@'))
       0 (neighbors grid x y)
     < 4
 
@@ -32,22 +33,21 @@ module Day04 : Day.Solution = struct
       grid;
     !idxs
 
-  let solve_part2 grid =
+  let remove_rolls grid =
     let rec loop idxs =
       match idxs with
-      | [] ->
-          (* previous implem was using a mutable counter *)
-          Array.fold_left
-            (fun acc row ->
-              Array.fold_left
-                (fun acc cell -> acc + if cell = 'x' then 1 else 0)
-                acc row)
-            0 grid
+      | [] -> grid
       | _ ->
           List.iter (fun (x, y) -> grid.(y).(x) <- 'x') idxs;
           loop @@ get_accessible_idxs grid
     in
     loop @@ get_accessible_idxs grid
+
+  let count_removed_rolls grid =
+    Array.fold_left
+      (fun acc row ->
+        Array.fold_left (fun acc cell -> acc + Bool.to_int (cell = 'x')) acc row)
+      0 grid
 
   let part1 filename =
     filename
@@ -62,7 +62,8 @@ module Day04 : Day.Solution = struct
     |> Utils.Input.read_file_to_string
     |> Utils.Input.tokenize_on_char '\n'
     |> to_grid
-    |> solve_part2
+    |> remove_rolls
+    |> count_removed_rolls
 end
 
 let () = Days.register "4" (module Day04)
