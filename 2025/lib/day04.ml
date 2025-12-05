@@ -4,6 +4,7 @@ module Day04 : Day.Solution = struct
 
   let to_grid input =
     input
+    |> Utils.Input.tokenize_on_char '\n'
     |> List.map (fun s -> s |> String.to_seq |> Array.of_seq)
     |> Array.of_list
 
@@ -49,21 +50,8 @@ module Day04 : Day.Solution = struct
         Array.fold_left (fun acc cell -> acc + Bool.to_int (cell = 'x')) acc row)
       0 grid
 
-  let part1 filename =
-    filename
-    |> Utils.Input.read_file_to_string
-    |> Utils.Input.tokenize_on_char '\n'
-    |> to_grid
-    |> get_accessible_idxs
-    |> List.length
-
-  let part2 filename =
-    filename
-    |> Utils.Input.read_file_to_string
-    |> Utils.Input.tokenize_on_char '\n'
-    |> to_grid
-    |> remove_rolls
-    |> count_removed_rolls
+  let part1 input = input |> to_grid |> get_accessible_idxs |> List.length
+  let part2 input = input |> to_grid |> remove_rolls |> count_removed_rolls
 end
 
 let () = Days.register "4" (module Day04)

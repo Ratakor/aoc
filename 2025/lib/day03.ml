@@ -30,15 +30,14 @@ module Day03 : Day.Solution = struct
     in
     aux 0 0
 
-  let solve filename n =
-    filename
-    |> Utils.Input.read_file_to_string
+  let solve input n =
+    input
     |> Utils.Input.tokenize_on_char '\n'
     |> List.map digits_of_string
     |> List.fold_left (fun acc digits -> acc + find_jolt digits n) 0
 
-  let part1 filename = solve filename 2
-  let part2 filename = solve filename 12
+  let part1 input = solve input 2
+  let part2 input = solve input 12
 end
 
 let () = Days.register "3" (module Day03)

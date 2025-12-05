@@ -12,20 +12,16 @@ module Day02 : Day.Solution = struct
   let range_of_string s =
     s |> String.split_on_char '-' |> List.map int_of_string
 
-  let solve filename match_fn =
-    filename
-    |> Utils.Input.read_file_to_string
+  let solve input match_fn =
+    input
     |> Utils.Input.tokenize_on_char ','
     |> List.map range_of_string
     |> List.map (fun range ->
         sum_match_range match_fn (List.nth range 0) (List.nth range 1))
     |> List.fold_left ( + ) 0
 
-  let part1 filename =
-    solve filename (is_invalid @@ Str.regexp {|^\([0-9]+\)\1$|})
-
-  let part2 filename =
-    solve filename (is_invalid @@ Str.regexp {|^\([0-9]+\)\1+$|})
+  let part1 input = solve input (is_invalid @@ Str.regexp {|^\([0-9]+\)\1$|})
+  let part2 input = solve input (is_invalid @@ Str.regexp {|^\([0-9]+\)\1+$|})
 end
 
 let () = Days.register "2" (module Day02)
