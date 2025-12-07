@@ -6,8 +6,8 @@ module Impl = struct
   let rec to_chunks acc seq =
     match seq () with
     | Seq.Nil -> acc
-    | Seq.Cons ((i, '+'), next) -> to_chunks (('+', (i, 0)) :: acc) next
-    | Seq.Cons ((i, '*'), next) -> to_chunks (('*', (i, 0)) :: acc) next
+    | Seq.Cons ((i, '+'), next) -> to_chunks ((( + ), (i, 0)) :: acc) next
+    | Seq.Cons ((i, '*'), next) -> to_chunks ((( * ), (i, 0)) :: acc) next
     | Seq.Cons ((_, ' '), next) -> (
         match acc with
         | [] -> failwith "Input doesn't start with an op"
@@ -31,10 +31,9 @@ module Impl = struct
     | _ -> failwith "Invalid input"
 
   let fold_op op l =
-    match op with
-    | '+' -> List.fold_left ( + ) 0 l
-    | '*' -> List.fold_left ( * ) 1 l
-    | _ -> failwith "Invalid op"
+    match l with
+    | hd :: tl -> List.fold_left op hd tl
+    | [] -> assert false
 
   let part1 input =
     let chunks, numbers = parse input in
