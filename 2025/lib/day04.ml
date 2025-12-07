@@ -1,15 +1,11 @@
+open Utils
+
 module Impl = struct
   let directions =
     [ (-1, -1); (0, -1); (1, -1); (-1, 0); (1, 0); (-1, 1); (0, 1); (1, 1) ]
 
-  let to_grid input =
-    input
-    |> Utils.Input.tokenize_on_char '\n'
-    |> List.map (fun s -> s |> String.to_seq |> Array.of_seq)
-    |> Array.of_list
-
   let neighbors grid x y =
-    let h = Array.length grid and w = Array.length grid.(0) in
+    let h = Matrix.height grid and w = Matrix.width grid in
     List.filter_map
       (fun (dx, dy) ->
         let nx = x + dx and ny = y + dy in
@@ -50,8 +46,11 @@ module Impl = struct
         Array.fold_left (fun acc cell -> acc + Bool.to_int (cell = 'x')) acc row)
       0 grid
 
-  let part1 input = input |> to_grid |> get_accessible_idxs |> List.length
-  let part2 input = input |> to_grid |> remove_rolls |> count_removed_rolls
+  let part1 input =
+    input |> Matrix.from_string |> get_accessible_idxs |> List.length
+
+  let part2 input =
+    input |> Matrix.from_string |> remove_rolls |> count_removed_rolls
 end
 
 module Day04 : Day.Solution = Impl
