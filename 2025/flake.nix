@@ -95,10 +95,12 @@
 
         devShells.default = pkgs.mkShellNoCC {
           inputsFrom = [ main ];
-          buildInputs = devPackages ++ (with pkgs.ocamlPackages; [
-            ocamlformat
-            ocaml-lsp
-          ]);
+          buildInputs =
+            devPackages
+            ++ (with pkgs.ocamlPackages; [
+              ocamlformat
+              ocaml-lsp
+            ]);
         };
 
         formatter = treefmt.config.build.wrapper;
