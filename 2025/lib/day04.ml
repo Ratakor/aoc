@@ -47,10 +47,10 @@ module Impl = struct
       0 grid
 
   let part1 input =
-    input |> Matrix.from_string |> get_accessible_idxs |> List.length
+    input |> Matrix.of_string |> get_accessible_idxs |> List.length
 
   let part2 input =
-    input |> Matrix.from_string |> remove_rolls |> count_removed_rolls
+    input |> Matrix.of_string |> remove_rolls |> count_removed_rolls
 end
 
 module Day04 : Day.Solution = Impl

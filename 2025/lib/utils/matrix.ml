@@ -1,4 +1,4 @@
-let from_string str =
+let of_string str =
   str
   |> Input.tokenize_on_char '\n'
   |> List.map (fun s -> s |> String.to_seq |> Array.of_seq)
