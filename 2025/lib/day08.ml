@@ -72,11 +72,11 @@ module Impl = struct
     let n = List.length points in
     let ds = DisjointSet.init n in
 
-    let i, j =
-      edges |> List.filter (fun (i, j) -> ds |> DisjointSet.union i j) |> last
-    in
-    let x1, _, _ = List.nth points i and x2, _, _ = List.nth points j in
-    x1 * x2
+    edges
+    |> List.filter (fun (i, j) -> ds |> DisjointSet.union i j)
+    |> last
+    |> (fun (i, j) -> (List.nth points i, List.nth points j))
+    |> fun ((x1, _, _), (x2, _, _)) -> x1 * x2
 end
 
 module Day08 : Day.Solution = Impl

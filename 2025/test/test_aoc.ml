@@ -82,9 +82,9 @@ let%expect_test "Day 07" =
   Printf.printf "%d" @@ Day07.part2 input;
   [%expect {| 40 |}]
 
-
 let%expect_test "Day 08" =
-  let input = {|162,817,812
+  let input =
+    {|162,817,812
 57,618,57
 906,360,560
 592,479,940

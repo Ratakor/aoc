@@ -26,7 +26,10 @@ module Impl = struct
       |> List.fold_left (fun len s -> max len (String.length s)) 0
       |> ( + ) 1 (* padding *)
     in
-    lines |> List.map (fun s -> rpad ' ' max_len s) |> List.rev |> function
+    lines
+    |> List.map (fun s -> rpad ' ' max_len s)
+    |> List.rev
+    |> function
     | hd :: tl -> (hd |> String.to_seqi |> to_chunks [], List.rev tl)
     | _ -> failwith "Invalid input"
 
