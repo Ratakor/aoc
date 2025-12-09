@@ -1,12 +1,8 @@
 module Impl = struct
   module DisjointSet = struct
-    type t = {
-      parent : int array;
-      (* rank is overkill here *)
-      rank : int array;
-    }
+    type t = { parent : int array }
 
-    let init n = { parent = Array.init n (fun i -> i); rank = Array.make n 0 }
+    let init n = { parent = Array.init n (fun i -> i) }
 
     let rec find x ds =
       if ds.parent.(x) <> x then ds.parent.(x) <- find ds.parent.(x) ds;
@@ -14,14 +10,8 @@ module Impl = struct
 
     let union x y ds =
       let x = find x ds and y = find y ds in
-      if x = y then false
-      else (
-        if ds.rank.(x) < ds.rank.(y) then ds.parent.(x) <- y
-        else if ds.rank.(x) > ds.rank.(y) then ds.parent.(y) <- x
-        else (
-          ds.parent.(y) <- x;
-          ds.rank.(x) <- ds.rank.(x) + 1);
-        true)
+      if x <> y then ds.parent.(y) <- x;
+      x <> y
   end
 
   (* this actually returns distance squared *)
@@ -32,6 +22,11 @@ module Impl = struct
   let rec fold_lefti f accu i = function
     | [] -> accu
     | a :: l -> fold_lefti f (f accu i a) (i + 1) l
+
+  let rec last = function
+    | [] -> failwith "last"
+    | [ a ] -> a
+    | _ :: tl -> last tl
 
   let parse input =
     let points =
@@ -51,6 +46,7 @@ module Impl = struct
                   acc (i + 1))
            [] 0
       |> List.sort (fun (_, _, d1) (_, _, d2) -> compare d1 d2)
+      |> List.map (fun (i, j, _) -> (i, j))
     in
     (points, edges)
 
@@ -61,7 +57,7 @@ module Impl = struct
 
     edges
     |> List.take 10 (* 10 for sample, 1000 for input *)
-    |> List.iter (fun (i, j, _) -> ds |> DisjointSet.union i j |> ignore);
+    |> List.iter (fun (i, j) -> ds |> DisjointSet.union i j |> ignore);
 
     let circuits = Array.make n 0 in
     points
@@ -76,12 +72,8 @@ module Impl = struct
     let n = List.length points in
     let ds = DisjointSet.init n in
 
-    let i, j, _ =
-      edges
-      |> List.filter (fun (i, j, _) -> ds |> DisjointSet.union i j)
-      |> List.take (n - 1)
-      |> List.rev
-      |> List.hd
+    let i, j =
+      edges |> List.filter (fun (i, j) -> ds |> DisjointSet.union i j) |> last
     in
     let x1, _, _ = List.nth points i and x2, _, _ = List.nth points j in
     x1 * x2
