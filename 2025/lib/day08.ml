@@ -29,8 +29,7 @@ module Impl = struct
     let dx = x1 - x2 and dy = y1 - y2 and dz = z1 - z2 in
     (dx * dx) + (dy * dy) + (dz * dz)
 
-  let rec fold_lefti f accu i l =
-    match l with
+  let rec fold_lefti f accu i = function
     | [] -> accu
     | a :: l -> fold_lefti f (f accu i a) (i + 1) l
 
@@ -73,8 +72,19 @@ module Impl = struct
     circuits |> Array.to_seq |> Seq.take 3 |> Seq.fold_left ( * ) 1
 
   let part2 input =
-    ignore input;
-    0
+    let points, edges = parse input in
+    let n = List.length points in
+    let ds = DisjointSet.init n in
+
+    let i, j, _ =
+      edges
+      |> List.filter (fun (i, j, _) -> ds |> DisjointSet.union i j)
+      |> List.take (n - 1)
+      |> List.rev
+      |> List.hd
+    in
+    let x1, _, _ = List.nth points i and x2, _, _ = List.nth points j in
+    x1 * x2
 end
 
 module Day08 : Day.Solution = Impl
