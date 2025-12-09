@@ -5,11 +5,10 @@ module Impl = struct
     |> List.of_seq
     |> List.map (fun c -> int_of_char c - int_of_char '0')
 
-  let count_digits n =
-    (n |> float_of_int |> log10) +. 1. |> floor |> int_of_float
+  let count_digits n = (n |> float_of_int |> log10) +. 1. |> int_of_float
 
   (* i to j included *)
-  let subseq i j seq = seq |> Seq.drop i |> Seq.take (j - i + 1)
+  let sublist i j l = l |> List.drop i |> List.take (j - i + 1)
 
   let find_jolt digits n =
     let rec aux acc first_idx =
@@ -19,9 +18,8 @@ module Impl = struct
         let last_idx = List.length digits - (n - digit_count) in
         let max_idx, max_digit =
           digits
-          |> List.to_seq
-          |> subseq first_idx last_idx
-          |> Seq.fold_lefti
+          |> sublist first_idx last_idx
+          |> List.foldi
                (fun max idx digit ->
                  if digit > snd max then (idx, digit) else max)
                (-1, -1)

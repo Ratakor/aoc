@@ -15,7 +15,7 @@ module Impl = struct
 
   let is_accessible grid x y =
     List.fold_left
-      (fun acc (nx, ny) -> acc + Bool.to_int (grid.(ny).(nx) = '@'))
+      (fun acc (nx, ny) -> acc + Bool.to_int Char.(grid.(ny).(nx) = '@'))
       0 (neighbors grid x y)
     < 4
 
@@ -25,7 +25,8 @@ module Impl = struct
       (fun y row ->
         Array.iteri
           (fun x cell ->
-            if cell = '@' && is_accessible grid x y then idxs := (x, y) :: !idxs)
+            if Char.(cell = '@') && is_accessible grid x y then
+              idxs := (x, y) :: !idxs)
           row)
       grid;
     !idxs
@@ -43,7 +44,9 @@ module Impl = struct
   let count_removed_rolls grid =
     Array.fold_left
       (fun acc row ->
-        Array.fold_left (fun acc cell -> acc + Bool.to_int (cell = 'x')) acc row)
+        Array.fold_left
+          (fun acc cell -> acc + Bool.to_int Char.(cell = 'x'))
+          acc row)
       0 grid
 
   let part1 input =

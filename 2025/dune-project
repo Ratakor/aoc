@@ -14,4 +14,4 @@
 (package
  (name aoc)
  (synopsis "Advent of Code 2025")
- (depends ocaml ppx_expect))
+ (depends ocaml containers ppx_expect))

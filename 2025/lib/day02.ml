@@ -1,24 +1,22 @@
 module Impl = struct
   let is_invalid regex n = Str.string_match regex (string_of_int n) 0
 
-  let sum_match_range match_fn start stop =
-    let rec aux acc i =
-      if i > stop then acc
-      else if match_fn i then aux (acc + i) (i + 1)
-      else aux acc (i + 1)
-    in
-    aux 0 start
-
-  let range_of_string s =
-    s |> String.split_on_char '-' |> List.map int_of_string
-
   let solve input match_fn =
     input
     |> Utils.Input.tokenize_on_char ','
-    |> List.map range_of_string
-    |> List.map (fun range ->
-        sum_match_range match_fn (List.nth range 0) (List.nth range 1))
-    |> List.fold_left ( + ) 0
+    |> List.fold_left
+         (fun acc str ->
+           str
+           |> String.split_on_char '-'
+           |> List.map int_of_string
+           |> (function
+           | [ start; stop ] -> (start, stop)
+           | _ -> failwith "Invalid input")
+           |> Pair.fold List.( -- )
+           |> List.fold_left
+                (fun acc n -> if match_fn n then acc + n else acc)
+                acc)
+         0
 
   let part1 input = solve input (is_invalid @@ Str.regexp {|^\([0-9]+\)\1$|})
   let part2 input = solve input (is_invalid @@ Str.regexp {|^\([0-9]+\)\1+$|})

@@ -19,15 +19,6 @@ module Impl = struct
     let dx = x1 - x2 and dy = y1 - y2 and dz = z1 - z2 in
     (dx * dx) + (dy * dy) + (dz * dz)
 
-  let rec fold_lefti f accu i = function
-    | [] -> accu
-    | a :: l -> fold_lefti f (f accu i a) (i + 1) l
-
-  let rec last = function
-    | [] -> failwith "last"
-    | [ a ] -> a
-    | _ :: tl -> last tl
-
   let parse input =
     let points =
       input
@@ -37,14 +28,15 @@ module Impl = struct
     in
     let edges =
       points
-      |> fold_lefti
+      |> List.foldi
            (fun acc i p ->
              points
              |> List.drop (i + 1)
-             |> fold_lefti
-                  (fun acc j q -> (i, j, distance p q) :: acc)
-                  acc (i + 1))
-           [] 0
+             |> List.fold_left
+                  (fun (acc, j) q -> ((i, j, distance p q) :: acc, j + 1))
+                  (acc, i + 1)
+             |> fst)
+           []
       |> List.sort (fun (_, _, d1) (_, _, d2) -> compare d1 d2)
       |> List.map (fun (i, j, _) -> (i, j))
     in
@@ -74,7 +66,8 @@ module Impl = struct
 
     edges
     |> List.filter (fun (i, j) -> ds |> DisjointSet.union i j)
-    |> last
+    |> List.last_opt
+    |> Option.get_exn_or "Invalid input"
     |> (fun (i, j) -> (List.nth points i, List.nth points j))
     |> fun ((x1, _, _), (x2, _, _)) -> x1 * x2
 end

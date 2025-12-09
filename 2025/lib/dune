@@ -1,4 +1,6 @@
 (library
  (name aoc)
- (libraries utils str)
- (wrapped false))
+ (libraries utils str containers)
+ (wrapped false)
+ (flags
+  (:standard -open Containers)))

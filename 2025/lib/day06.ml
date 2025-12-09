@@ -56,8 +56,7 @@ module Impl = struct
         |> List.map (fun col ->
             numbers
             |> List.map (fun row -> String.get row col)
-            |> List.to_seq
-            |> String.of_seq
+            |> String.of_list
             |> String.trim
             |> int_of_string)
         |> fold_op op)

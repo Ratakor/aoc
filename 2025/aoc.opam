@@ -8,6 +8,7 @@ bug-reports: "https://github.com/ratakor/aoc/issues"
 depends: [
   "dune" {>= "3.20"}
   "ocaml"
+  "containers"
   "ppx_expect"
   "odoc" {with-doc}
 ]

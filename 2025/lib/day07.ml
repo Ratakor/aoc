@@ -2,7 +2,10 @@ open Utils
 
 module Impl = struct
   let find_start m =
-    (m.(0) |> Array.find_index (fun c -> c = 'S') |> Option.get, 1)
+    ( m.(0)
+      |> Array.find_index (fun c -> Char.(c = 'S'))
+      |> Option.get_exn_or "Invalid input",
+      1 )
 
   let part1 input =
     let m = Matrix.of_string input in
