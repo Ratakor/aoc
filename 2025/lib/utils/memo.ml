@@ -11,10 +11,11 @@ let memo ?(init_size = 1000) f =
 let memo_rec ?(init_size = 1000) f =
   let ht = Hashtbl.create init_size in
   let rec g x =
-    try Hashtbl.find ht x
-    with Not_found ->
-      let y = f g x in
-      Hashtbl.add ht x y;
-      y
+    match Hashtbl.find_opt ht x with
+    | Some y -> y
+    | None ->
+        let y = f g x in
+        Hashtbl.add ht x y;
+        y
   in
   g
