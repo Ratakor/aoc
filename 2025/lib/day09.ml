@@ -27,8 +27,7 @@ module Impl = struct
     aux l
 
   let part1 input =
-    input
-    |> parse
+    parse input
     |> combinations
     |> List.fold_left (fun a (p, q) -> max a (area p q)) 0
 

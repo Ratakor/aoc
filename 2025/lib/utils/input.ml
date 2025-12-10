@@ -6,10 +6,7 @@ let read_file_to_string filename =
   s
 
 let tokenize_on_char c str =
-  str
-  |> String.split_on_char c
-  |> List.map String.trim
-  |> List.filter (fun x -> String.length x > 0)
+  str |> String.split_on_char c |> List.filter (fun x -> String.length x > 0)
 
 (* Scanf try parse pattern stolen from: https://gist.github.com/p1xelHer0/98633ed78e74485c6827d08493884a8d *)
 let parse fmt map line = try Some (Scanf.sscanf line fmt map) with _ -> None

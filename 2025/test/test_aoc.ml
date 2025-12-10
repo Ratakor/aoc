@@ -110,7 +110,7 @@ let%expect_test "Day 08" =
   Printf.printf "%d" @@ Day08.part2 input;
   [%expect {| 25272 |}]
 
-let%expect_test "Day 08" =
+let%expect_test "Day 09" =
   let input = {|7,1
 11,1
 11,7
@@ -123,3 +123,14 @@ let%expect_test "Day 08" =
   [%expect {| 50 |}];
   Printf.printf "%d" @@ Day09.part2 input;
   [%expect {| 24 |}]
+
+let%expect_test "Day 10" =
+  let input =
+    {|[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
+[...#.] (0,2,3,4) (2,3) (0,4) (0,1,2) (1,2,3,4) {7,5,12,7,2}
+[.###.#] (0,1,2,3,4) (0,3,4) (0,1,2,4,5) (1,2) {10,11,11,5,10,5}|}
+  in
+  Printf.printf "%d" @@ Day10.part1 input;
+  [%expect {| 7 |}];
+  Printf.printf "%d" @@ Day10.part2 input;
+  [%expect {| 33 |}]
