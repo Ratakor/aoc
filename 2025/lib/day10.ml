@@ -2,7 +2,7 @@ module Impl = struct
   type machine = {
     lights : bool array;
     buttons : int list list;
-    joltage : int list;
+    joltages : int array;
   }
 
   let pp m =
@@ -21,12 +21,12 @@ module Impl = struct
             ~pp_sep:(fun fmt () -> Format.fprintf fmt ",")
             Int.pp))
       m.buttons
-      (List.pp
+      (Array.pp
          ~pp_start:(fun fmt () -> Format.fprintf fmt "{")
          ~pp_stop:(fun fmt () -> Format.fprintf fmt "}")
          ~pp_sep:(fun fmt () -> Format.fprintf fmt ",")
          Int.pp)
-      m.joltage
+      m.joltages
 
   let rec take_last = function
     | [] -> failwith "take_last"
@@ -44,16 +44,13 @@ module Impl = struct
         |> function
         | [] -> failwith ("Invalid line: " ^ line)
         | lights :: tl ->
-            let buttons, joltage = take_last tl in
+            let buttons, joltages = take_last tl in
             {
               lights =
                 lights
                 |> remove_surround
                 |> String.to_array
-                |> Array.map (function
-                  | '.' -> false
-                  | '#' -> true
-                  | _ -> failwith ("Invalid lights: " ^ lights));
+                |> Array.map (Char.equal '#');
               buttons =
                 buttons
                 |> List.map
@@ -61,19 +58,13 @@ module Impl = struct
                        remove_surround
                        %> Utils.Input.tokenize_on_char ','
                        %> List.map int_of_string);
-              joltage =
-                joltage
+              joltages =
+                joltages
                 |> remove_surround
                 |> Utils.Input.tokenize_on_char ','
-                |> List.map int_of_string;
+                |> List.map int_of_string
+                |> Array.of_list;
             })
-
-  let press_buttons lights buttons =
-    buttons
-    |> List.map (fun buttons ->
-        lights
-        |> Array.mapi (fun i l ->
-            if List.exists (fun b -> b = i) buttons then not l else l))
 
   let bfs ?(size = 10) ~start ~successors ~success () =
     let queue = Queue.create () in
@@ -95,20 +86,33 @@ module Impl = struct
     in
     bfs' ()
 
+  let press_buttons buttons a op =
+    buttons
+    |> List.map (fun button ->
+        a
+        |> Array.mapi (fun i e ->
+            if List.exists (( = ) i) button then op e else e))
+
   let part1 input =
     parse input
     |> List.map (fun m ->
-        (* pp m; *)
         bfs ()
           ~start:(Array.make (Array.length m.lights) false)
-          ~successors:(fun l -> press_buttons l m.buttons)
+          ~successors:(fun l -> press_buttons m.buttons l not)
           ~success:(fun l -> Array.equal Bool.equal l m.lights)
         |> Option.get_exn_or "bfs failed")
     |> List.fold_left ( + ) 0
 
   let part2 input =
-    ignore input;
-    0
+    parse input
+    |> List.map (fun m ->
+        (* pp m; *)
+        bfs ()
+          ~start:(Array.make (Array.length m.joltages) 0)
+          ~successors:(fun j -> press_buttons m.buttons j (( + ) 1))
+          ~success:(fun j -> Array.equal Int.equal j m.joltages)
+        |> Option.get_exn_or "bfs failed")
+    |> List.fold_left ( + ) 0
 end
 
 module Day10 : Day.Solution = Impl
