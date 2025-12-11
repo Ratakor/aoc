@@ -12,7 +12,6 @@ module Impl = struct
 
   let solve input ctz =
     input
-    |> String.lines
     |> List.map line_to_delta
     |> List.fold_left
          (fun (acc, dial) delta ->

@@ -15,7 +15,6 @@ module Impl = struct
 
   let parse input =
     input
-    |> String.lines
     |> List.split_at String.(( = ) "")
     |> Pair.map
          (List.map Fun.(Range.of_string %> Option.get_exn_or "Invalid range"))

@@ -32,7 +32,6 @@ module Impl = struct
 
   let parse input =
     input
-    |> String.lines
     |> List.map (fun line ->
         line
         |> String.split_on_char ' '

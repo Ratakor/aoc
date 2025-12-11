@@ -3,8 +3,8 @@ module Impl = struct
 
   let solve input p =
     input
+    |> List.hd
     |> String.split_on_char ','
-    |> List.map String.trim
     |> List.fold_left
          (fun acc str ->
            str

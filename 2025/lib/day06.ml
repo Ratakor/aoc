@@ -11,13 +11,12 @@ module Impl = struct
     | _ -> failwith "Invalid char"
 
   let parse input =
-    let lines = String.lines input in
     let max_len =
-      lines
+      input
       |> List.fold_left (fun len s -> max len (String.length s)) 0
       |> ( + ) 1 (* additional padding *)
     in
-    lines
+    input
     |> List.map (String.pad ~side:`Right ~c:' ' max_len)
     |> List.take_last
     |> Pair.map_snd Fun.(String.to_seqi %> to_chunks [])

@@ -1,8 +1,7 @@
 module Impl = struct
   let parse input =
-    let lines = String.lines input in
-    let ht = Hashtbl.create (List.length lines) in
-    lines
+    let ht = Hashtbl.create (List.length input) in
+    input
     |> List.iter (fun line ->
         line
         |> String.split_on_char ':'

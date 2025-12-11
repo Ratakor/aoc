@@ -24,7 +24,6 @@ module Impl = struct
 
   let solve input n =
     input
-    |> String.lines
     |> List.map digits_of_string
     |> List.fold_left (fun acc digits -> acc + find_jolt digits n) 0
 

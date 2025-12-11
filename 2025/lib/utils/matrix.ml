@@ -1,3 +1,5 @@
+let of_lines lines = lines |> List.map String.to_array |> Array.of_list
+
 let of_string str =
   str |> String.lines |> List.map String.to_array |> Array.of_list
 

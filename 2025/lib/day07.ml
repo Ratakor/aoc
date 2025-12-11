@@ -6,7 +6,7 @@ module Impl = struct
       1 )
 
   let part1 input =
-    let m = Matrix.of_string input in
+    let m = Matrix.of_lines input in
     let start = find_start m in
     let h = Matrix.height m and w = Matrix.width m in
     (* could probably be merged with part2 but this got nice visualization *)
@@ -24,7 +24,7 @@ module Impl = struct
     aux start
 
   let part2 input =
-    let m = Matrix.of_string input in
+    let m = Matrix.of_lines input in
     let start = find_start m in
     let h = Matrix.height m and w = Matrix.width m in
     let aux self (x, y) =
