@@ -11,5 +11,5 @@ let run day_str filename =
 let () =
   match Sys.argv with
   | [| _; day_str; filename |] -> run day_str filename
-  | [| _; day_str |] -> run day_str "-"
+  | [| _; day_str |] -> run day_str "/dev/stdin"
   | _ -> Printf.eprintf "Usage: %s <day> [<filename>]\n" Sys.argv.(0)
