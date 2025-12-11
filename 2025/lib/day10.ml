@@ -28,23 +28,18 @@ module Impl = struct
          Int.pp)
       m.joltages
 
-  let rec take_last = function
-    | [] -> failwith "take_last"
-    | [ x ] -> ([], x)
-    | hd :: tl -> take_last tl |> Pair.map_fst (List.cons hd)
-
   let remove_surround s = String.sub s 1 (String.length s - 2)
 
   let parse input =
     input
-    |> Utils.Input.tokenize_on_char '\n'
+    |> String.lines
     |> List.map (fun line ->
         line
-        |> Utils.Input.tokenize_on_char ' '
+        |> String.split_on_char ' '
         |> function
         | [] -> failwith ("Invalid line: " ^ line)
         | lights :: tl ->
-            let buttons, joltages = take_last tl in
+            let buttons, joltages = List.take_last tl in
             {
               lights =
                 lights
@@ -56,14 +51,14 @@ module Impl = struct
                 |> List.map
                      Fun.(
                        remove_surround
-                       %> Utils.Input.tokenize_on_char ','
+                       %> String.split_on_char ','
                        %> List.map int_of_string
                        %> Array.of_list)
                 |> Array.of_list;
               joltages =
                 joltages
                 |> remove_surround
-                |> Utils.Input.tokenize_on_char ','
+                |> String.split_on_char ','
                 |> List.map int_of_string
                 |> Array.of_list;
             })

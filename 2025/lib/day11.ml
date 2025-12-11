@@ -37,7 +37,7 @@ module Impl = struct
             | name -> self (name, dac, fft))
           |> List.fold_left ( + ) 0
     in
-    Utils.Memo.memo_rec aux ("svr", false, false)
+    Memo.memo_rec aux ("svr", false, false)
 end
 
 module Day11 : Day.Solution = Impl

@@ -3,17 +3,15 @@ module Impl = struct
 
   let solve input p =
     input
-    |> Utils.Input.tokenize_on_char ','
+    |> String.split_on_char ','
+    |> List.map String.trim
     |> List.fold_left
          (fun acc str ->
            str
-           |> String.split_on_char '-'
-           |> List.map int_of_string
-           |> (function
-           | [ start; stop ] -> (start, stop)
-           | _ -> failwith "Invalid input")
-           |> Pair.fold List.( -- )
-           |> List.fold_left (fun acc n -> if p n then acc + n else acc) acc)
+           |> Range.of_string
+           |> Option.get_exn_or ("Invalid range: " ^ str)
+           |> Range.to_seq
+           |> Seq.fold_left (fun acc n -> if p n then acc + n else acc) acc)
          0
 
   let part1 input = solve input (is_invalid @@ Str.regexp {|^\([0-9]+\)\1$|})

@@ -1,5 +1,3 @@
-open Utils
-
 module Impl = struct
   let directions =
     [ (-1, -1); (0, -1); (1, -1); (-1, 0); (1, 0); (-1, 1); (0, 1); (1, 1) ]
@@ -20,22 +18,20 @@ module Impl = struct
     < 4
 
   let get_accessible_idxs grid =
-    let idxs = ref [] in
-    Array.iteri
-      (fun y row ->
-        Array.iteri
-          (fun x cell ->
-            if Char.(cell = '@') && is_accessible grid x y then
-              idxs := (x, y) :: !idxs)
-          row)
-      grid;
-    !idxs
+    Array.foldi
+      (fun acc y row ->
+        Array.foldi
+          (fun acc x cell ->
+            if Char.(cell = '@') && is_accessible grid x y then (x, y) :: acc
+            else acc)
+          acc row)
+      [] grid
 
   let remove_rolls grid =
     let rec loop idxs =
       match idxs with
       | [] -> grid
-      | _ ->
+      | idxs ->
           List.iter (fun (x, y) -> grid.(y).(x) <- 'x') idxs;
           loop @@ get_accessible_idxs grid
     in

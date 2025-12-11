@@ -22,9 +22,14 @@ module Impl = struct
   let parse input =
     let points =
       input
-      |> Utils.Input.tokenize_on_char '\n'
+      |> String.lines
       |> List.map (fun line ->
-          Scanf.sscanf line "%d,%d,%d" (fun x y z -> (x, y, z)))
+          line
+          |> String.split_on_char ','
+          |> List.map int_of_string
+          |> function
+          | [ x; y; z ] -> (x, y, z)
+          | _ -> failwith "Invalid point")
     in
     let edges =
       points
@@ -52,8 +57,8 @@ module Impl = struct
     |> List.iter (fun (i, j) -> ds |> DisjointSet.union i j |> ignore);
 
     let circuits = Array.make n 0 in
-    points
-    |> List.iteri (fun i _ ->
+    Seq.(0 --^ n)
+    |> Seq.iter (fun i ->
         let i = ds |> DisjointSet.find i in
         circuits.(i) <- circuits.(i) + 1);
     Array.sort (fun a b -> -compare a b) circuits;

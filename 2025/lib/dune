@@ -3,4 +3,4 @@
  (libraries utils str containers)
  (wrapped false)
  (flags
-  (:standard -open Containers)))
+  (:standard -open Containers -open Utils)))

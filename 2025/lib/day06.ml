@@ -1,8 +1,4 @@
 module Impl = struct
-  let rtrim s = Str.replace_first (Str.regexp {| +$|}) "" s
-  let rpad c n s = s ^ String.init (n - String.length s) (fun _ -> c)
-
-  (* this mf doesn't know about List.filter (fun c -> c <> ' ') *)
   let rec to_chunks acc seq =
     match seq () with
     | Seq.Nil -> acc
@@ -15,23 +11,16 @@ module Impl = struct
     | _ -> failwith "Invalid char"
 
   let parse input =
-    let lines =
-      input
-      |> String.split_on_char '\n'
-      |> List.map rtrim
-      |> List.filter (fun x -> String.length x > 0)
-    in
+    let lines = String.lines input in
     let max_len =
       lines
       |> List.fold_left (fun len s -> max len (String.length s)) 0
-      |> ( + ) 1 (* padding *)
+      |> ( + ) 1 (* additional padding *)
     in
     lines
-    |> List.map (fun s -> rpad ' ' max_len s)
-    |> List.rev
-    |> function
-    | hd :: tl -> (hd |> String.to_seqi |> to_chunks [], List.rev tl)
-    | _ -> failwith "Invalid input"
+    |> List.map (String.pad ~side:`Right ~c:' ' max_len)
+    |> List.take_last
+    |> Pair.map_snd Fun.(String.to_seqi %> to_chunks [])
 
   let fold_op op l =
     match l with
@@ -39,7 +28,7 @@ module Impl = struct
     | [] -> assert false
 
   let part1 input =
-    let chunks, numbers = parse input in
+    let numbers, chunks = parse input in
     chunks
     |> List.map (fun (op, (pos, len)) ->
         numbers
@@ -49,13 +38,13 @@ module Impl = struct
     |> List.fold_left ( + ) 0
 
   let part2 input =
-    let chunks, numbers = parse input in
+    let numbers, chunks = parse input in
     chunks
     |> List.map (fun (op, (pos, len)) ->
         List.init len (fun i -> pos + i)
         |> List.map (fun col ->
             numbers
-            |> List.map (fun row -> String.get row col)
+            |> List.map (fun row -> row.[col])
             |> String.of_list
             |> String.trim
             |> int_of_string)

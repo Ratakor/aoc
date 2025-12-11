@@ -1,7 +1,7 @@
 module Impl = struct
   let parse input =
     input
-    |> Utils.Input.tokenize_on_char '\n'
+    |> String.lines
     |> List.map (fun line ->
         line
         |> String.split_on_char ','

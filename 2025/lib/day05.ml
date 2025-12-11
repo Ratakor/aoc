@@ -1,14 +1,4 @@
 module Impl = struct
-  type inventory =
-    | Range of (int * int)
-    | Ingredient of int
-
-  let parsers =
-    [
-      Utils.Input.parse "%d-%d" (fun start stop -> Range (start, stop));
-      Utils.Input.parse "%d" (fun ingredient -> Ingredient ingredient);
-    ]
-
   (* is this metaballing? *)
   let merge_ranges ranges =
     let rec aux acc ranges =
@@ -24,20 +14,13 @@ module Impl = struct
     ranges |> List.sort (fun (a, _) (b, _) -> compare a b) |> aux []
 
   let parse input =
-    let parsed =
-      input
-      |> Utils.Input.tokenize_on_char '\n'
-      |> List.map (Utils.Input.try_parse parsers)
-    in
-    ( parsed
-      |> List.filter_map (function
-        | Range x -> Some x
-        | _ -> None)
-      |> merge_ranges,
-      parsed
-      |> List.filter_map (function
-        | Ingredient x -> Some x
-        | _ -> None) )
+    input
+    |> String.lines
+    |> List.split_at String.(( = ) "")
+    |> Pair.map
+         (List.map Fun.(Range.of_string %> Option.get_exn_or "Invalid range"))
+         (List.map int_of_string)
+    |> Pair.map_fst merge_ranges
 
   let is_fresh ingredient ranges =
     List.exists

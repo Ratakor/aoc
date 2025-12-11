@@ -1,3 +1,6 @@
 (library
  (name utils)
- (modules input matrix memo timing))
+ (libraries containers)
+ (modules list matrix memo range timing)
+ (flags
+  (:standard -open Containers)))

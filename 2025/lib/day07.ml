@@ -1,5 +1,3 @@
-open Utils
-
 module Impl = struct
   let find_start m =
     ( m.(0)

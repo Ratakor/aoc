@@ -1,6 +1,6 @@
 let run_day day_module filename =
   let module D = (val day_module : Day.Solution) in
-  let input = Utils.Input.read_file_to_string filename in
+  let input = IO.(with_in filename read_all) in
   Printf.printf "Part 1: %d\nPart 2: %d\n" (D.part1 input) (D.part2 input)
 
 let run day_str filename =

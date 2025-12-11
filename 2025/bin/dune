@@ -1,6 +1,8 @@
 (executable
  (public_name aoc)
  (name main)
- (libraries aoc)
+ (libraries aoc containers)
+ (flags
+  (:standard -open Containers))
  (link_flags
   (:standard -linkall)))

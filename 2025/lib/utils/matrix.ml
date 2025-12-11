@@ -1,8 +1,5 @@
 let of_string str =
-  str
-  |> Input.tokenize_on_char '\n'
-  |> List.map (fun s -> s |> String.to_seq |> Array.of_seq)
-  |> Array.of_list
+  str |> String.lines |> List.map String.to_array |> Array.of_list
 
 let height m = Array.length m
 let width m = Array.length m.(0)
