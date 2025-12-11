@@ -134,3 +134,36 @@ let%expect_test "Day 10" =
   [%expect {| 7 |}];
   Printf.printf "%d" @@ Day10.part2 input;
   [%expect {| 33 |}]
+
+let%expect_test "Day 11" =
+  let input =
+    {|aaa: you hhh
+you: bbb ccc
+bbb: ddd eee
+ccc: ddd eee fff
+ddd: ggg
+eee: out
+fff: out
+ggg: out
+hhh: ccc fff iii
+iii: out|}
+  in
+  Printf.printf "%d" @@ Day11.part1 input;
+  [%expect {| 5 |}];
+  let input =
+    {|svr: aaa bbb
+aaa: fft
+fft: ccc
+bbb: tty
+tty: ccc
+ccc: ddd eee
+ddd: hub
+hub: fff
+eee: dac
+dac: fff
+fff: ggg hhh
+ggg: out
+hhh: out|}
+  in
+  Printf.printf "%d" @@ Day11.part2 input;
+  [%expect {| 2 |}]
