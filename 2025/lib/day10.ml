@@ -127,45 +127,44 @@ module Impl = struct
           a.(j).(k) <- ((y * a.(i).(k)) + (x * a.(j).(k))) / d);
       b.(j) <- ((y * b.(i)) + (x * b.(j))) / d)
 
-  let with_break f = try f () with Exit -> ()
+  let reduce (coeffs, joltages, bounds) =
+    let rec aux i =
+      if i = Array.length coeffs.(0) then ()
+      else
+        let l = ref [||] in
+        let k = ref i in
 
-  let reduce (a, b, c) =
-    let aux () =
-      Seq.(0 --^ Array.length a.(0))
-      |> Seq.iter (fun i ->
-          let l = ref [||] in
-          let k = ref i in
+        while Array.length !l = 0 && !k < Array.length coeffs.(0) do
+          swap_col coeffs bounds i !k;
+          l :=
+            Array.(i --^ Array.length coeffs)
+            |> Array.filter (fun j -> coeffs.(j).(i) <> 0);
+          incr k
+        done;
 
-          while Array.length !l = 0 && !k < Array.length a.(0) do
-            swap_col a c i !k;
-            l :=
-              Array.(i --^ Array.length a)
-              |> Array.filter (fun j -> a.(j).(i) <> 0);
-            incr k
-          done;
+        if Array.length !l = 0 then ()
+        else (
+          swap_row coeffs joltages i !l.(0);
 
-          if Array.length !l = 0 then raise Exit;
+          Seq.(i + 1 --^ Array.length coeffs)
+          |> Seq.iter (fun j -> reduce_row coeffs joltages i j);
 
-          swap_row a b i !l.(0);
-
-          Seq.(i + 1 --^ Array.length a)
-          |> Seq.iter (fun j -> reduce_row a b i j))
+          aux (i + 1))
     in
-
-    aux |> with_break;
+    aux 0;
 
     let l =
-      Array.(0 --^ Array.length a)
-      |> Array.filter (fun i -> a.(i) |> Array.exists (fun aa -> aa <> 0))
+      Array.(0 --^ Array.length coeffs)
+      |> Array.filter (fun i -> coeffs.(i) |> Array.exists (fun a -> a <> 0))
     in
-    let a = l |> Array.map (fun i -> a.(i)) in
-    let b = l |> Array.map (fun i -> b.(i)) in
+    let coeffs = l |> Array.map (fun i -> coeffs.(i)) in
+    let joltages = l |> Array.map (fun i -> joltages.(i)) in
 
-    Seq.(Array.length a - 1 -- 0)
+    Seq.(Array.length coeffs - 1 -- 0)
     |> Seq.iter (fun i ->
-        Seq.(0 --^ i) |> Seq.iter (fun j -> reduce_row a b i j));
+        Seq.(0 --^ i) |> Seq.iter (fun j -> reduce_row coeffs joltages i j));
 
-    (a, b, c)
+    (coeffs, joltages, bounds)
 
   let rec combinations n c =
     if n = 0 then [ [] ]
@@ -175,31 +174,26 @@ module Impl = struct
           combinations (n - 1) c |> List.map (fun l -> i :: l))
       |> List.flatten
 
-  let solve (a, b, c) =
-    let k = Array.length a.(0) - Array.length a in
-    combinations k c
+  let solve (coeffs, joltages, bounds) =
+    let k = Array.length coeffs.(0) - Array.length coeffs in
+    combinations k bounds
     |> List.map Array.of_list
-    |> List.fold_left
-         (fun mins c ->
-           let sol = ref (Array.fold_left ( + ) 0 c) in
-           let aux () =
-             Seq.(0 --^ Array.length a)
-             |> Seq.iter (fun i ->
-                 let cc =
-                   Seq.(0 --^ Array.length c)
-                   |> Seq.map (fun j ->
-                       c.(j) * a.(i).(Array.length a.(0) - k + j))
-                 in
-                 let s = b.(i) - Seq.fold_left ( + ) 0 cc in
-                 let aa = s / a.(i).(i) in
-                 if aa < 0 || s mod a.(i).(i) <> 0 then (
-                   sol := max_int;
-                   raise Exit)
-                 else sol := !sol + aa)
-           in
-           aux |> with_break;
-           min mins !sol)
-         max_int
+    |> List.map (fun c ->
+        let rec aux acc i =
+          if i = Array.length coeffs then acc
+          else
+            let cc =
+              Seq.(0 --^ Array.length c)
+              |> Seq.map (fun j ->
+                  c.(j) * coeffs.(i).(Array.length coeffs.(0) - k + j))
+            in
+            let s = joltages.(i) - Seq.fold_left ( + ) 0 cc in
+            let a = s / coeffs.(i).(i) in
+            if a < 0 || s mod coeffs.(i).(i) <> 0 then max_int
+            else aux (acc + a) (i + 1)
+        in
+        aux (Array.fold_left ( + ) 0 c) 0)
+    |> List.fold_left min max_int
 
   let part1 input =
     parse input
@@ -215,17 +209,17 @@ module Impl = struct
   let part2 input =
     parse input
     |> List.map (fun m ->
-        let a =
+        let coeffs =
           Array.init_matrix (Array.length m.joltages) (Array.length m.buttons)
             (fun i j -> m.buttons.(j) |> Array.exists (( = ) i) |> Bool.to_int)
+        and bounds =
+          m.buttons
+          |> Array.map
+               Fun.(
+                 Array.map (fun i -> m.joltages.(i))
+                 %> Array.fold_left min max_int)
         in
-        let c =
-          Array.init (Array.length m.buttons) (fun i ->
-              m.buttons.(i)
-              |> Array.map (fun j -> m.joltages.(j))
-              |> Array.fold_left min max_int)
-        in
-        (a, m.joltages, c))
+        (coeffs, m.joltages, bounds))
     |> List.map Fun.(reduce %> solve)
     |> List.fold_left ( + ) 0
 end
