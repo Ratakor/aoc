@@ -46,7 +46,7 @@
             ./bin
             ./lib
             # ./test
-            ./aoc.opam
+            ./${package}.opam
             ./dune-project
           ];
         };
